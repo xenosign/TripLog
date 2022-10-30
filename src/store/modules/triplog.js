@@ -5,7 +5,6 @@ const ADD_PLAN_DATE = 'triplog/ADD_PLAN_DATE';
 const ADD_PLAN_ITEM = 'triplog/ADD_PLAN_ITEM';
 const SET_DATE_IDX = 'triplog/SET_DATE_IDX';
 
-
 // 로그인, 로그아웃 액션 생성 함수
 export function login(loginInfo) {
   return {
@@ -50,7 +49,8 @@ const initState = {
     endDate: '',
     period: [],
   },
-  planItems: [[]],
+  // 10.30 상황에 맞게 2중 배열을 만들기 위해 변경
+  planItems: [],
   planDateIdx: 0,
   list: [],
 };
@@ -78,15 +78,31 @@ export default function triplog(state = initState, action) {
         planDate: action.payload,
       };
     case ADD_PLAN_ITEM:
-      state.planItems[action.payload.idx] = action.payload.copy;
+      // 10.30 state 값에 바로 배열 처리를 하면 mutation 에러 발생
+      // 해당 값을 받아줄 dummy 데이터 생성
+      let dummyItem = {};
+      dummyItem.planItems = [];
+
+      // period 의 길이 만큼 배열이 생성 되면 되므로 for 문으로 배열 만들기
+      // 이전 데이터는 그대로 있어야 하므로 기존 데이터의 값이 존재 하면 그대로 넣어주기
+      for (let i = 0; i < state.planDate.period.length; i++) {
+        if (state.planItems[i] !== undefined) {
+          dummyItem.planItems.push(state.planItems[i]);
+        } else {
+          dummyItem.planItems.push({});
+        }
+      }
+      // 새롭게 들어온 데이터를 넣어주기!
+      dummyItem.planItems[action.payload.idx] = action.payload.copy;
       return {
         ...state,
+        planItems: dummyItem.planItems,
       };
     case SET_DATE_IDX:
       return {
         ...state,
         planDateIdx: action.payload,
-      }
+      };
     default:
       return state;
   }
