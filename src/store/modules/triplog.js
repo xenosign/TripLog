@@ -89,7 +89,7 @@ export default function triplog(state = initState, action) {
         if (state.planItems[i] !== undefined) {
           dummyItem.planItems.push(state.planItems[i]);
         } else {
-          dummyItem.planItems.push({});
+          dummyItem.planItems.push([]);
         }
       }
       // 새롭게 들어온 데이터를 넣어주기!
