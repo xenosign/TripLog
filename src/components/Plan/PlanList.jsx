@@ -28,7 +28,7 @@ const PlanList = ({ productItems, planItems, setPlanItems, onClick}) => {
       key={idx}>
                 
     <Card className="col-md-12 overflow-auto">
-    <KakaoMap className='col-6 m-auto'/>
+    <KakaoMap className='col-6 m-auto' idx={idx}/>
     <Row className='d-flex justify-content-center'>
       <Col md={4} className='d-flex m-3'>
         <p className='fw-6 fw-bold me-2'>day {idx+1}</p>
@@ -43,6 +43,7 @@ const PlanList = ({ productItems, planItems, setPlanItems, onClick}) => {
       productItems={productItems} 
       setPlanItems={setPlanItems}
       planItems={planItems}
+      idx={idx}
       />
     </Row>
 

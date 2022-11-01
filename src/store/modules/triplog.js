@@ -4,6 +4,7 @@ const LOGOUT = 'triplogr/LOGOUT';
 const ADD_PLAN_DATE = 'triplog/ADD_PLAN_DATE';
 const ADD_PLAN_ITEM = 'triplog/ADD_PLAN_ITEM';
 const SET_DATE_IDX = 'triplog/SET_DATE_IDX';
+const DELETE_PLAN_ITEM = 'triplog/DELETE_PLAN_ITEM';
 
 // 로그인, 로그아웃 액션 생성 함수
 export function login(loginInfo) {
@@ -38,6 +39,13 @@ export function setDateIdx(idx) {
     type: SET_DATE_IDX,
     payload: idx,
   };
+}
+
+export function deletePlanItem(deleteItemObj) {
+  return {
+    type: DELETE_PLAN_ITEM,
+    payload: deleteItemObj,
+  }
 }
 
 // 초기 상태 설정
@@ -85,6 +93,7 @@ export default function triplog(state = initState, action) {
 
       // period 의 길이 만큼 배열이 생성 되면 되므로 for 문으로 배열 만들기
       // 이전 데이터는 그대로 있어야 하므로 기존 데이터의 값이 존재 하면 그대로 넣어주기
+
       for (let i = 0; i < state.planDate.period.length; i++) {
         if (state.planItems[i] !== undefined) {
           dummyItem.planItems.push(state.planItems[i]);
@@ -94,15 +103,25 @@ export default function triplog(state = initState, action) {
       }
       // 새롭게 들어온 데이터를 넣어주기!
       dummyItem.planItems[action.payload.idx] = action.payload.copy;
+
       return {
         ...state,
         planItems: dummyItem.planItems,
       };
     case SET_DATE_IDX:
+      console.log('idx', action.payload);
       return {
         ...state,
         planDateIdx: action.payload,
       };
+    case DELETE_PLAN_ITEM:
+      const deleteIdx = state.planItems[action.payload.idx].findIndex(e => e.title === action.payload.title);
+      console.log("배열", state.planItems[action.payload.idx]);
+      console.log("딜리트", deleteIdx);
+      state.planItems[action.payload.idx].splice(deleteIdx, 1);
+      return {
+        ...state,
+      }
     default:
       return state;
   }

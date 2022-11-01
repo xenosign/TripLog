@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import SelectList from '../../components/Plan/SelectList'
 
-export default function KakaoMap() {
+export default function KakaoMap(props) {
   // 검색한 여행지 저장을 위한 State
   const [search, setSearch] = useState([]);
 
@@ -16,20 +16,25 @@ export default function KakaoMap() {
 
   // Kakao Map 사용을 위한 useEffect
   useEffect(() => {
-    const container = document.getElementById('map');
+    const container = document.getElementById(`map`);
     // 기본이 되는 지도 중앙 위치
     const options = {
       center: new kakao.maps.LatLng(33.368, 126.54),
       // 지도 레벨(높을 수록 멀어진다)
       level: 11
     };
-    // 지도 생성을 위한 메소드
-    const map = new kakao.maps.Map(container, options);
+    // 지도 생성을 위한 메소드   
+    const map = new kakao.maps.Map(container, options);      
+    
+    map.relayout();
+    
+    map.setDraggable(false);
+    map.setZoomable(false);
     
     // 지도 드래그 금지
-    map.setDraggable(false);
+    // map.setDraggable(false);
     // 지도 줌인 금지
-    map.setZoomable(false);
+    // map.setZoomable(false);
 
     // 선택한 list에 대한 forEach
     list.forEach((el, num, arr) => {
@@ -72,8 +77,8 @@ export default function KakaoMap() {
   }, [list])
 
   return (
-    <>
-        <KakaoDiv id='map'></KakaoDiv>
+    <>    
+        <KakaoDiv id={`map`}></KakaoDiv>
       
       <FlexDiv>
       {/* <RowDiv>
@@ -118,7 +123,7 @@ export default function KakaoMap() {
             }}>검색</button>
           </form> */}
           
-          <div>
+          {/* <div>
             {
               // search의 map
               search.map(function (a, i) {
@@ -132,7 +137,7 @@ export default function KakaoMap() {
                 )
               })
             }
-          </div>
+          </div> */}
         </RowDiv>
         </FlexDiv>
     </>
