@@ -11,7 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Nav from '../../components/Nav';
 import Footer from '../../components/Footer';
 import Welcome from './Welcome';
-import KakaoMap from './KakaoMap';
 import { addPlanItems } from '../../store/modules/triplog';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -20,8 +19,6 @@ const { kakao } = window;
 export default function Plan({}) {
   const params = useParams();
   const areaCode = params.areaCode;
-
-  const oldIdx = useRef();
 
   const dispatch = useDispatch();
   const state = useSelector((state) => state.triplog);
@@ -51,71 +48,8 @@ export default function Plan({}) {
   // 클릭 한 여행지 저장을 위한 State
   const [list, setList] = useState([]);
 
-  // Kakao Map 사용을 위한 useEffect
-  useEffect(() => {
-    const container = document.getElementById('map');
-    // 기본이 되는 지도 중앙 위치
-    const options = {
-      center: new kakao.maps.LatLng(33.368, 126.54),
-      // 지도 레벨(높을 수록 멀어진다)
-      level: 11,
-    };
-    // 지도 생성을 위한 메소드
-    const map = new kakao.maps.Map(container, options);
-
-    // 지도 드래그 금지
-    map.setDraggable(false);
-    // 지도 줌인 금지
-    map.setZoomable(false);
-
-    // 선택한 list에 대한 forEach
-    // list.forEach((el, num, arr) => {
-    // 10.30 redux 에서 값 받아와서 그려주기로 변경!
-    if (state.planItems[state.planDateIdx]) {
-      state.planItems[state.planDateIdx].forEach((el, num, arr) => {
-        // 지도에 생성할 마커
-        new kakao.maps.Marker({
-          //마커가 표시 될 지도
-          map: map,
-          //마커가 표시 될 위치
-          position: new kakao.maps.LatLng(el.mapy, el.mapx),
-        });
-        // path 를 주기 위해서 리스트에 저장 된 공간의 좌표를 pathArr 라는 배열에 푸쉬
-        let pathArr = [];
-        for (let i = 0; i < list.length; i++) {
-          pathArr.push(new kakao.maps.LatLng(arr[i].mapy, arr[i].mapx));
-        }
-        // 선을 긋기 위한 메소드
-        const polyline = new kakao.maps.Polyline({
-          // 지도생성
-          map: map,
-          // path의 배열
-          path: pathArr,
-          // 선을 굵기
-          strokeWeight: 3,
-          // 선의 색
-          strokeColor: '#34A853',
-          // 선의 불투명도
-          strokeOpacity: 1,
-          // 선의 스타일
-          strokeStyle: 'solid',
-        });
-
-        // 선 생성
-        polyline.setMap(map);
-        // 선의 배열
-        polyline.getPath();
-        // 선의 길의 계산
-        polyline.getLength();
-      });
-    }
-
-    // list가 변경 될 때 마다 실행
-  }, [state]);
-
   const [productItems, setProductItems] = useState([]); //받아온데이터 담기
   const [planItems, setPlanItems] = useState([]);
-  const [isPlanOpen, setIsPlanOpen] = useState(false);
   let [itemData] = [productItems];
 
   const saveToLocalStorage = () => {
@@ -141,13 +75,15 @@ export default function Plan({}) {
 
       <Modal
         show={show}
-        onHide={handleClose}
+        onHide={() => {
+          handleClose();
+        }}
         backdrop="static"
         keyboard={false}
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title>제주 여행 🍊</Modal.Title>
+          <Modal.Title> 🍊</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card className="col-sm-10 col-md- overflow-auto m-auto">
@@ -207,18 +143,18 @@ export default function Plan({}) {
                           style={{ width: '9rem', border: 'none' }}
                           // data-productid={contentid}
                           onClick={() => {
-                            let copy = [
-                              ...list,
-                              {
-                                title: a.title,
-                                mapx: parseFloat(a.mapx),
-                                mapy: parseFloat(a.mapy),
-                              },
-                            ];
+                            // copy 를 사용하지 않고 선택된 장소의 정보만 전달 하도록 수정
+                            const pickedPlace = {
+                              title: a.title,
+                              mapx: parseFloat(a.mapx),
+                              mapy: parseFloat(a.mapy),
+                            };
                             dispatch(
-                              addPlanItems({ copy, idx: state.planDateIdx })
+                              addPlanItems({
+                                pickedPlace,
+                                idx: state.planDateIdx,
+                              })
                             );
-                            setList(copy);
                           }}
                           key={i}
                         >
@@ -263,9 +199,8 @@ export default function Plan({}) {
         <Modal.Footer>
           <Button
             variant="secondary"
-            // 10.30 닫기를 누르면 기존에 저장 된 list 항목을 초기화
+            // tetz 이제 list 를 초기화 해줄 필요가 없기 때문에 setList([]) 삭제
             onClick={() => {
-              setList([]);
               handleClose();
             }}
           >
@@ -274,9 +209,8 @@ export default function Plan({}) {
 
           <Button
             variant="success"
-            // 10.30 선택 완료도 마찬가지 누르면 기존에 저장 된 list 항목을 초기화
+            // tetz 이제 list 를 초기화 해줄 필요가 없기 때문에 setList([]) 삭제
             onClick={() => {
-              setList([]);
               handleClose();
             }}
           >
