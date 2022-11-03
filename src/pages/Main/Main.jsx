@@ -40,13 +40,13 @@ export default function Main() {
 
   window.addEventListener('scroll', () => {
     console.log(window.scrollY);
-    if (window.scrollY >= 1960) {
+    if (window.scrollY >= 2500) {
       wrap.current.style.display = 'block';
       slide.current.style.display = 'none';
       empty.current.style.display = 'none';
     }
 
-    if (window.scrollY >= 2960) {
+    if (window.scrollY >= 2600) {
       slide.current.style.display = 'none';
       empty.current.style.display = 'none';
     }
